@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
-
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/painting.dart';
+import 'package:runnur/actors/player.dart';
 import 'package:runnur/levels/levels.dart';
 
 /// [LevelMap] this is the enum for the levels
@@ -33,16 +34,26 @@ extension LevelsMap on LevelMap {
 }
 
 /// [Pixel] this is the Main App class
-class Pixel extends FlameGame {
+class Pixel extends FlameGame with HasKeyboardHandlerComponents, DragCallbacks {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
 
-  @override
-  final world = Levels(levelName: LevelMap.levelOne.name);
+  /// [player] this is the player class
+  Player player = Player(character: Character.pinkMan.name);
+
+  /// [joystick] this is the joystick class
+  late JoystickComponent joystick;
+
+  /// [showJoystick] this is to show the joystick on screen
+  bool showJoystick = true;
 
   @override
-  FutureOr<void> onLoad() {
-    images.loadAllImages();
+  FutureOr<void> onLoad() async {
+    await images.loadAllImages();
+
+    @override
+    final world = Levels(levelName: LevelMap.levelOne.name, player: player);
+
     camera = CameraComponent.withFixedResolution(
       width: 640,
       height: 360,
@@ -51,7 +62,55 @@ class Pixel extends FlameGame {
 
     camera.viewfinder.anchor = Anchor.topLeft;
 
-    addAll([camera, world]);
+    await addAll([camera, world]);
+    if (showJoystick) {
+      addJoystick();
+    }
+
     return super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if (showJoystick) {
+      updateJoystick();
+    }
+    super.update(dt);
+  }
+
+  /// [addJoystick] this is the function to add the joystick on screen
+  void addJoystick() {
+    joystick = JoystickComponent(
+      knob: SpriteComponent(
+        sprite: Sprite(
+          images.fromCache('HUD/Knob.png'),
+        ),
+      ),
+      background: SpriteComponent(
+        sprite: Sprite(
+          images.fromCache('HUD/Joystick.png'),
+        ),
+      ),
+      margin: const EdgeInsets.only(left: 32, bottom: 32),
+    );
+    add(joystick);
+  }
+
+  /// [updateJoystick] this is the function to update the joystick on screen
+  void updateJoystick() {
+    switch (joystick.direction) {
+      case JoystickDirection.up ||
+            JoystickDirection.idle ||
+            JoystickDirection.down:
+        player.playerDirection = PlayerDirection.none;
+      case JoystickDirection.left ||
+            JoystickDirection.upLeft ||
+            JoystickDirection.downLeft:
+        player.playerDirection = PlayerDirection.left;
+      case JoystickDirection.right ||
+            JoystickDirection.upRight ||
+            JoystickDirection.downRight:
+        player.playerDirection = PlayerDirection.right;
+    }
   }
 }

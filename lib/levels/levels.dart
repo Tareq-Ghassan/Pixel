@@ -40,10 +40,13 @@ extension CharacterExtension on Character {
 /// [Levels] class for the levels in the game.
 class Levels extends World {
   /// [Levels] constructor.
-  Levels({required this.levelName});
+  Levels({required this.levelName, required this.player});
 
   /// [levelName] The name of the level.
   String levelName;
+
+  /// [player] The [Player] actor.
+  final Player player;
 
   /// [level] The [TiledComponent] for the level.
   late TiledComponent level;
@@ -60,12 +63,8 @@ class Levels extends World {
       for (final spawnPoint in spawnPointsPlayer.objects) {
         switch (spawnPoint.class_) {
           case 'Player':
-            add(
-              Player(
-                character: Character.maskDude.name,
-                position: Vector2(spawnPoint.x, spawnPoint.y),
-              ),
-            );
+            player.position = Vector2(spawnPoint.x, spawnPoint.y);
+            add(player);
         }
       }
     } else {

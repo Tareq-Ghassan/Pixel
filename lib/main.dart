@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:runnur/pixel.dart';
 
-void main() {
+void main() async {
   if (kReleaseMode) {
     Logger.root.level = Level.WARNING;
   }
@@ -17,8 +17,8 @@ void main() {
     );
   });
   WidgetsFlutterBinding.ensureInitialized();
-  Flame.device.fullScreen();
-  Flame.device.setLandscape();
+  await Flame.device.fullScreen();
+  await Flame.device.setLandscape();
   final game = Pixel();
   runApp(GameWidget(game: kDebugMode ? Pixel() : game));
 }
