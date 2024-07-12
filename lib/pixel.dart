@@ -3,8 +3,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/painting.dart';
-import 'package:runnur/actors/player.dart';
-import 'package:runnur/levels/levels.dart';
+import 'package:runnur/components/levels.dart';
+import 'package:runnur/components/player.dart';
 
 /// [LevelMap] this is the enum for the levels
 enum LevelMap {
@@ -99,18 +99,18 @@ class Pixel extends FlameGame with HasKeyboardHandlerComponents, DragCallbacks {
   /// [updateJoystick] this is the function to update the joystick on screen
   void updateJoystick() {
     switch (joystick.direction) {
-      case JoystickDirection.up ||
-            JoystickDirection.idle ||
-            JoystickDirection.down:
-        player.playerDirection = PlayerDirection.none;
+      case JoystickDirection.down || JoystickDirection.idle:
+        player.horizontalMovement = 0;
       case JoystickDirection.left ||
             JoystickDirection.upLeft ||
             JoystickDirection.downLeft:
-        player.playerDirection = PlayerDirection.left;
+        player.horizontalMovement = -1;
       case JoystickDirection.right ||
             JoystickDirection.upRight ||
             JoystickDirection.downRight:
-        player.playerDirection = PlayerDirection.right;
+        player.horizontalMovement = 1;
+      case JoystickDirection.up:
+        player.hasjumped = true;
     }
   }
 }

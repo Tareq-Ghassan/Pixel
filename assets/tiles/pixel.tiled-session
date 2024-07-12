@@ -8,11 +8,25 @@
     ],
     "fileStates": {
         "Level-01.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.9196,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 320.2479338842976,
+                "y": 173.98869073510224
+            }
+        },
+        "Level-02.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
             "scale": 1.085078125,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 320.2534379724963,
-                "y": 135.93491252069987
+                "y": 179.7105623155015
             }
         },
         "Pixel.tsx": {
@@ -27,13 +41,14 @@
     "map.tileWidth": 16,
     "map.width": 40,
     "openFiles": [
-        "Pixel.tsx",
-        "Level-01.tmx"
+        "Level-01.tmx",
+        "Level-02.tmx"
     ],
     "project": "pixel.tiled-project",
     "recentFiles": [
-        "Pixel.tsx",
-        "Level-01.tmx"
+        "Level-02.tmx",
+        "Level-01.tmx",
+        "Pixel.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:logging/logging.dart';
-import 'package:runnur/actors/player.dart';
+import 'package:runnur/components/collision_block.dart';
+import 'package:runnur/components/player.dart';
 
 /// [Character] enum class for the characters in the game.
 enum Character {
@@ -51,6 +52,8 @@ class Levels extends World {
   /// [level] The [TiledComponent] for the level.
   late TiledComponent level;
 
+  List<CollisionBlock> collisionBlocks = [];
+
   @override
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
@@ -71,6 +74,47 @@ class Levels extends World {
       Logger('levels.dart').warning('No spawn points found in the level.');
     }
 
+    final collisionLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
+
+    if (collisionLayer != null) {
+      for (final collision in collisionLayer.objects) {
+        switch (collision.class_) {
+          case 'Plattform':
+            final platform = CollisionBlock(
+              position: Vector2(
+                collision.x,
+                collision.y,
+              ),
+              size: Vector2(
+                collision.width,
+                collision.height,
+              ),
+              isPlatform: true,
+            );
+            collisionBlocks.add(platform);
+            add(platform);
+
+          default:
+            final block = CollisionBlock(
+              position: Vector2(
+                collision.x,
+                collision.y,
+              ),
+              size: Vector2(
+                collision.width,
+                collision.height,
+              ),
+            );
+            collisionBlocks.add(block);
+            add(block);
+        }
+      }
+    } else {
+      Logger('levels.dart')
+          .warning('Collsions objects not found in the level.');
+    }
+
+    player.collisionBlocks = collisionBlocks;
     return super.onLoad();
   }
 }
