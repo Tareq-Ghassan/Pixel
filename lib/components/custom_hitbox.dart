@@ -1,7 +1,7 @@
-/// [PlayerHitbox] class that define collision for player hitbox
-class PlayerHitbox {
-  /// [PlayerHitbox] Constructor
-  PlayerHitbox({
+/// [CustomHitBox] class that define collision the actuel hitbox for any object
+class CustomHitBox {
+  /// [CustomHitBox] Constructor
+  CustomHitBox({
     required this.offsetX,
     required this.offsetY,
     required this.width,

@@ -4,7 +4,8 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import 'package:runnur/components/collision_block.dart';
-import 'package:runnur/components/player_hitbox.dart';
+import 'package:runnur/components/custom_hitbox.dart';
+import 'package:runnur/components/fruit.dart';
 import 'package:runnur/components/utils.dart';
 import 'package:runnur/pixel.dart';
 
@@ -42,7 +43,7 @@ extension PlayerStateExtension on PlayerState {
 
 /// [Player] is the player of the game
 class Player extends SpriteAnimationGroupComponent<PlayerState>
-    with HasGameRef<Pixel>, KeyboardHandler {
+    with HasGameRef<Pixel>, KeyboardHandler, CollisionCallbacks {
   /// [Player] constructors
   Player({this.character = 'Ninja Frog', super.position});
 
@@ -82,7 +83,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   bool hasjumped = false;
 
   /// [hitbox] the actual axes for player collision box
-  PlayerHitbox hitbox = PlayerHitbox(
+  CustomHitBox hitbox = CustomHitBox(
     height: 28,
     width: 14,
     offsetX: 10,
@@ -134,6 +135,13 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
         keysPressed.contains(LogicalKeyboardKey.arrowUp);
 
     return super.onKeyEvent(event, keysPressed);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Fruit) other.collidedWithPlayer();
+
+    super.onCollision(intersectionPoints, other);
   }
 
   void _loadAnimations() {

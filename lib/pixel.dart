@@ -34,7 +34,8 @@ extension LevelsMap on LevelMap {
 }
 
 /// [Pixel] this is the Main App class
-class Pixel extends FlameGame with HasKeyboardHandlerComponents, DragCallbacks {
+class Pixel extends FlameGame
+    with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
 
@@ -46,6 +47,9 @@ class Pixel extends FlameGame with HasKeyboardHandlerComponents, DragCallbacks {
 
   /// [showJoystick] this is to show the joystick on screen
   bool showJoystick = true;
+
+  /// [score] this is the score of the player
+  int score = 0;
 
   @override
   FutureOr<void> onLoad() async {
