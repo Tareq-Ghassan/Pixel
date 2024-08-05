@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:runnur/pixel.dart';
 
 void main() async {
+  //Add to review
   if (kReleaseMode) {
     Logger.root.level = Level.WARNING;
   }
