@@ -85,6 +85,7 @@ class Pixel extends FlameGame
   /// [addJoystick] this is the function to add the joystick on screen
   void addJoystick() {
     joystick = JoystickComponent(
+      priority: 10,
       knob: SpriteComponent(
         sprite: Sprite(
           images.fromCache('HUD/Knob.png'),

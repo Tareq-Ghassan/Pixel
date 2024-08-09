@@ -11,11 +11,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.9196,
+            "scale": 1.3853,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 320.2479338842976,
-                "y": 173.98869073510224
+                "x": 290.5507832238504,
+                "y": 157.36663538583701
             }
         },
         "Level-02.tmx": {
@@ -45,6 +45,7 @@
         "Level-02.tmx"
     ],
     "project": "pixel.tiled-project",
+    "property.type": "float",
     "recentFiles": [
         "Level-02.tmx",
         "Level-01.tmx",
