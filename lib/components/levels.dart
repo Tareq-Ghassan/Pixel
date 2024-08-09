@@ -7,6 +7,7 @@ import 'package:runnur/components/background_tile.dart';
 import 'package:runnur/components/collision_block.dart';
 import 'package:runnur/components/fruit.dart';
 import 'package:runnur/components/player.dart';
+import 'package:runnur/components/saw.dart';
 import 'package:runnur/pixel.dart';
 
 /// [Character] enum class for the characters in the game.
@@ -118,6 +119,21 @@ class Levels extends World with HasGameRef<Pixel> {
               ),
             );
             add(fruit);
+          case 'Saw':
+            final saw = Saw(
+              isVertical: spawnPoint.properties.getValue('isVertical') as bool,
+              offNeg: spawnPoint.properties.getValue('offNeg') as double,
+              offPos: spawnPoint.properties.getValue('offPos') as double,
+              position: Vector2(
+                spawnPoint.x,
+                spawnPoint.y,
+              ),
+              size: Vector2(
+                spawnPoint.width,
+                spawnPoint.height,
+              ),
+            );
+            add(saw);
         }
       }
     } else {

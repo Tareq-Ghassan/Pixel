@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:runnur/components/collision_block.dart';
 import 'package:runnur/components/custom_hitbox.dart';
 import 'package:runnur/components/fruit.dart';
+import 'package:runnur/components/saw.dart';
 import 'package:runnur/components/utils.dart';
 import 'package:runnur/pixel.dart';
 
@@ -22,6 +23,12 @@ enum PlayerState {
 
   /// [jumping] The player is jumping
   jumping,
+
+  /// [hit] The player hit with a trap
+  hit,
+
+  /// [appearing] The player re appear again
+  appearing,
 }
 
 /// [PlayerStateExtension] is the extension of the [PlayerState]
@@ -37,6 +44,10 @@ extension PlayerStateExtension on PlayerState {
         return 'Fall';
       case PlayerState.jumping:
         return 'Jump';
+      case PlayerState.hit:
+        return 'Hit';
+      case PlayerState.appearing:
+        return 'Appearing';
     }
   }
 }
@@ -61,6 +72,12 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   //// [faling] is the faling animation of the player
   late final SpriteAnimation faling;
 
+  //// [hit] is the hit animation of the player
+  late final SpriteAnimation hit;
+
+  //// [appearing] is the appearing animation of the player
+  late final SpriteAnimation appearing;
+
   /// [stepTime] is the time of the animation per frame
   final double stepTime = 0.05;
 
@@ -69,6 +86,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   /// [moveSpeed] is the speed of the player
   double moveSpeed = 100;
+
+  /// [startingPosition] represent the starting postion of the player
+  Vector2 startingPosition = Vector2.zero();
 
   /// [velocity] is the velocity of the player
   Vector2 velocity = Vector2.zero();
@@ -81,6 +101,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   /// [hasjumped] if user jumped
   bool hasjumped = false;
+
+  /// [gotHit] if user hit by a trap
+  bool gotHit = false;
 
   /// [hitbox] the actual axes for player collision box
   CustomHitBox hitbox = CustomHitBox(
@@ -98,6 +121,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   FutureOr<void> onLoad() {
     _loadAnimations();
     // debugMode = true;
+    startingPosition = Vector2(position.x, position.y);
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -109,11 +133,13 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   @override
   void update(double dt) {
-    _updatePlayerState();
-    _updateMovement(dt);
-    _checkHorizontalCollision();
-    _applyGravity(dt);
-    _checkVerticalCollision();
+    if (!gotHit) {
+      _updatePlayerState();
+      _updateMovement(dt);
+      _checkHorizontalCollision();
+      _applyGravity(dt);
+      _checkVerticalCollision();
+    }
     super.update(dt);
   }
 
@@ -140,6 +166,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Fruit) other.collidedWithPlayer();
+    if (other is Saw) _respawn();
 
     super.onCollision(intersectionPoints, other);
   }
@@ -164,26 +191,47 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
       state: PlayerState.faling.name,
       amount: 1,
     );
+    hit = _createSpriteAnimation(
+      state: PlayerState.hit.name,
+      amount: 7,
+    );
+
+    appearing = _createSpriteAnimation(
+      state: PlayerState.appearing.name,
+      amount: 7,
+      path: 'Main Characters/${PlayerState.appearing.name} (96x96).png',
+      textureSize: Vector2.all(96),
+      loop: false,
+    );
 
     animations = {
       PlayerState.idle: idle,
       PlayerState.running: runing,
       PlayerState.faling: faling,
       PlayerState.jumping: jumping,
+      PlayerState.hit: hit,
+      PlayerState.appearing: appearing,
     };
+
     current = PlayerState.idle;
   }
 
   SpriteAnimation _createSpriteAnimation({
     required String state,
     required int amount,
+    Vector2? textureSize,
+    String? path,
+    bool loop = true,
   }) {
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache('Main Characters/$character/$state (32x32).png'),
+      game.images.fromCache(
+        path ?? 'Main Characters/$character/$state (32x32).png',
+      ),
       SpriteAnimationData.sequenced(
         amount: amount,
         stepTime: stepTime,
-        textureSize: Vector2.all(32),
+        textureSize: textureSize ?? Vector2.all(32),
+        loop: loop,
       ),
     );
   }
@@ -275,5 +323,23 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     position.y += velocity.y * dt;
     isOnGround = false;
     hasjumped = false;
+  }
+
+  void _respawn() {
+    gotHit = true;
+    current = PlayerState.hit;
+    final hitAnimation = animationTickers![PlayerState.hit]!;
+    hitAnimation.completed.whenComplete(() {
+      scale.x = 1;
+      position = startingPosition - Vector2.all(32);
+      current = PlayerState.appearing;
+      final appearingAnimation = animationTickers![PlayerState.appearing]!;
+      appearingAnimation.completed.whenComplete(() {
+        velocity = Vector2.zero();
+        position = startingPosition;
+        _updatePlayerState();
+        gotHit = false;
+      });
+    });
   }
 }

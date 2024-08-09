@@ -68,9 +68,9 @@
     <property name="offPos" type="float" value="3"/>
    </properties>
   </object>
-  <object id="62" type="Saw" x="288" y="285" width="32" height="30">
+  <object id="62" type="Saw" x="288" y="300" width="32" height="30">
    <properties>
-    <property name="isVertical" type="bool" value="true"/>
+    <property name="isVertical" type="bool" value="false"/>
     <property name="offNeg" type="float" value="8"/>
     <property name="offPos" type="float" value="7"/>
    </properties>
